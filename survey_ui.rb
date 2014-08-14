@@ -15,6 +15,7 @@ def menu
     puts "2: list surveys"
     puts "3: add responses"
     puts "4: create a question"
+    puts "5: take a survey"
     puts "0: exit"
     choice = gets.chomp
     case choice
@@ -22,6 +23,7 @@ def menu
       when '2' then list_surveys
       when '3' then add_response
       when '4' then create_question
+      when '5' then take_survey
       when '0' then exit
       else
         puts "This is not a valid option"
@@ -74,5 +76,21 @@ def create_question
   end
 end
 
+def take_survey
+  list_surveys
+  p "Which survey would you like to take?"; selected_survey = gets.chomp
+
+  survey = Survey.find_by(:name => selected_survey)
+  survey.questions.each_with_index do |question, i|
+    puts "#{i +1}.  #{question.question}\n"
+    question.responses.each_with_index do |response, x|
+      puts "Possible answers:"
+      puts "#{x + 1}. #{response.name}\n"
+
+    end
+    answer = gets.chomp
+    puts "answer received"
+  end
+end
 
 menu
