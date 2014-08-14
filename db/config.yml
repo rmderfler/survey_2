@@ -1,0 +1,7 @@
+development:
+  adapter: postgresql
+  database: quiz_development
+
+test:
+  adapter: postgresql
+  database: quiz_test
