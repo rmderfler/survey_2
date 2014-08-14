@@ -2,6 +2,7 @@ require 'active_record'
 require './lib/survey'
 require './lib/question'
 require './lib/response'
+require './lib/survey_taker'
 
 database_configurations = YAML::load(File.open('./db/config.yml'))
 development_configuration = database_configurations['development']
@@ -16,6 +17,7 @@ def menu
     puts "3: add responses"
     puts "4: create a question"
     puts "5: take a survey"
+    puts "6: count answers"
     puts "0: exit"
     choice = gets.chomp
     case choice
@@ -24,6 +26,7 @@ def menu
       when '3' then add_response
       when '4' then create_question
       when '5' then take_survey
+      when '6' then count_answers
       when '0' then exit
       else
         puts "This is not a valid option"
@@ -78,19 +81,35 @@ end
 
 def take_survey
   list_surveys
+  p "what is your name?"; name = gets.chomp
   p "Which survey would you like to take?"; selected_survey = gets.chomp
-
   survey = Survey.find_by(:name => selected_survey)
-  survey.questions.each_with_index do |question, i|
-    puts "#{i +1}.  #{question.question}\n"
+  survey.questions.each do |question|
+    puts "#{question.question}\n"
     question.responses.each_with_index do |response, x|
-      puts "Possible answers:"
       puts "#{x + 1}. #{response.name}\n"
-
     end
-    answer = gets.chomp
+    input = gets.chomp
+    answer = question.responses[((input).to_i)-1]
+    SurveyTaker.create(:name => name, :response_id => answer.id)
     puts "answer received"
   end
 end
+
+def count_answers
+  list_surveys
+  p "Choose a survey"; selected_survey = gets.chomp
+  survey = Survey.find_by(:name => selected_survey)
+  survey.questions.each { |question| puts "#{question.question}" }
+  puts "choose a question"; selected_question = gets.chomp
+  question = Question.find_by(:question => selected_question )
+  question.responses.each { |response| puts "#{response.name}" }
+  puts "choose a response"; selected_response = gets.chomp
+  response = Response.find_by(:name => selected_response)
+  chose_that_response = response.survey_takers.length
+  puts chose_that_response.to_s
+end
+
+
 
 menu
