@@ -1,7 +1,7 @@
 require 'active_record'
 require 'rspec'
 require 'survey'
-# require 'question'
+require 'question'
 
 ActiveRecord::Base.establish_connection(YAML::load(File.open('./db/config.yml'))["test"])
 
