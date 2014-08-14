@@ -36,7 +36,7 @@ end
 
 def create_survey
   print "Name your survey: "; survey_name = gets.chomp
-  new_survey = Survey.new(:name => survey_name)
+  new_survey = Survey.create(:name => survey_name)
   if new_survey.save
     puts "'#{survey_name}' has been added."
   else
@@ -53,17 +53,20 @@ end
 def add_response
   list_surveys
   print "Choose a survey: "; selected_survey = gets.chomp
-  survey = Survey.find_by(:name => selected_survey)
+  survey = Survey.all[((selected_survey).to_i)-1]
   puts "\n\n"
   puts "Here are all the questions from the #{survey.name} survey:"
   survey.questions.each_with_index do |question, i|
     puts "#{i + 1}. #{question.question}"
   end
   print "Choose a question to add a response to: "; question = gets.chomp
-  question_id = Question.find_by(:question => question).id
-  print "Add a new response to the question: "; name = gets.chomp
-  new_response = Response.create(:name => name, :question_id => question_id)
-  puts "New response was added"
+  question = survey.questions[((question).to_i)-1]
+
+  4.times do
+    print "Add a new response to #{question.question}: "; name = gets.chomp
+    new_response = Response.create(:name => name, :question_id => question.id)
+    puts "New response was added"
+  end
 end
 
 def create_question
@@ -79,6 +82,7 @@ def create_question
   end
 end
 
+
 def take_survey
   list_surveys
   p "what is your name?"; name = gets.chomp
@@ -93,6 +97,16 @@ def take_survey
     answer = question.responses[((input).to_i)-1]
     SurveyTaker.create(:name => name, :response_id => answer.id)
     puts "answer received"
+    4.times do
+      print "Do you wanna make one more choice?"; user_input = gets.chomp
+    if user_input == 'y'
+      print "Choose an answer"; input = gets.chomp
+      answer = question.responses[((input).to_i)-1]
+      SurveyTaker.create(:name => name, :response_id => answer.id)
+    elsif user_input == 'n'
+      break
+    end
+    end
   end
 end
 
