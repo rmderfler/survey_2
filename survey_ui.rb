@@ -94,21 +94,27 @@ def take_survey
       puts "#{x + 1}. #{response.name}\n"
     end
     input = gets.chomp
-    answer = question.responses[((input).to_i)-1]
-    SurveyTaker.create(:name => name, :response_id => answer.id)
-    puts "answer received"
-    4.times do
-      print "Do you wanna make one more choice?"; user_input = gets.chomp
-    if user_input == 'y'
-      print "Choose an answer"; input = gets.chomp
+    if (input.to_i.to_s == input) == true
       answer = question.responses[((input).to_i)-1]
       SurveyTaker.create(:name => name, :response_id => answer.id)
-    elsif user_input == 'n'
-      break
-    end
+      puts "answer received"
+      4.times do
+        print "Do you wanna make one more choice?"; user_input = gets.chomp
+        if user_input == 'y'
+          print "Choose an answer"; input = gets.chomp
+          answer = question.responses[((input).to_i)-1]
+          SurveyTaker.create(:name => name, :response_id => answer.id)
+        elsif user_input == 'n'
+          break
+        end
+      end
+    else
+      new_response = Response.create(:name => input, :question_id => question.id)
+      SurveyTaker.create(:name => name, :response_id => new_response.id)
     end
   end
 end
+
 
 def count_answers
   list_surveys
